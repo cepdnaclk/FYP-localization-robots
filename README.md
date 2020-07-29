@@ -12,6 +12,12 @@ pip install opencv-python
 pip install aruco
 ```
 
+or use following command
+
+```
+pip install -r requirement.txt
+```
+
 ### Run the scripts
 
 You can try scripts on the ./scripts directory

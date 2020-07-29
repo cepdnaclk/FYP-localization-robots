@@ -1,0 +1,4 @@
+opencv-python==4.3.0.36
+numpy==1.18.5
+aruco==3.1.2.0
+ar-markers==0.5.0
