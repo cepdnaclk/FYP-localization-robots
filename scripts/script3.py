@@ -35,7 +35,10 @@ if __name__ == '__main__':
         # detectMarkers(inputImage, dictionary, markerCorners, markerIds, parameters, rejectedCandidates);
         markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
-        if (markerIds != None):
+        #print(type(markerIds))
+
+        # Non-empty array of markers
+        if (type(markerIds) != type(None)):
 
             # drawDetectedMarkers(outputImage, markerCorners, markerIds)
             cv.aruco.drawDetectedMarkers(frame, markerCorners, markerIds);
@@ -43,11 +46,13 @@ if __name__ == '__main__':
             # estimatePoseSingleMarkers(markerCorners, size_of_marker_in_real, cameraMatrix, distCoeffs, rvecs, tvecs);
             rvecs, tvecs, _objPoints = cv.aruco.estimatePoseSingleMarkers(markerCorners, 50, cameraMatrix, distCoeffs)
 
-            for i in range(len(markerIds)):
-                print(markerIds[i], rvecs[i], tvecs[i])
-                cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
+            #for i in range(len(markerIds)):
+                #print(markerIds[i], rvecs[i], tvecs[i])
+                
+                # Display marker coordinates with x,y,z axies
+                #cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
 
-        cv.imshow('Test Frame', frame)
+        cv.imshow('Marker Detector', frame)
 
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
