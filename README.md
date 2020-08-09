@@ -10,6 +10,7 @@ Please install following pip packages if they aren't pre-installed
 pip install numpy
 pip install opencv-python
 pip install aruco
+pip install paho-mqtt
 ```
 
 or use following command
