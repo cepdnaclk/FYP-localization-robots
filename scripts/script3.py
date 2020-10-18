@@ -46,11 +46,11 @@ if __name__ == '__main__':
             # estimatePoseSingleMarkers(markerCorners, size_of_marker_in_real, cameraMatrix, distCoeffs, rvecs, tvecs);
             rvecs, tvecs, _objPoints = cv.aruco.estimatePoseSingleMarkers(markerCorners, 50, cameraMatrix, distCoeffs)
 
-            #for i in range(len(markerIds)):
-                #print(markerIds[i], rvecs[i], tvecs[i])
-                
+            for i in range(len(markerIds)):
+                print(markerIds[i],  tvecs[i][0] ) # rvecs[i],
+
                 # Display marker coordinates with x,y,z axies
-                #cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
+                cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
 
         cv.imshow('Marker Detector', frame)
 
