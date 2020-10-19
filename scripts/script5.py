@@ -18,7 +18,7 @@ y_scale = 1.0
 # -- MQTT variables ------------------------------------------------------------
 mqtt_server="68.183.188.135"
 mqtt_port=1883
-mqtt_keepalive=60
+mqtt_keepalive=600
 sub_topic_update="v1/localization/update"
 sub_topic_publish="v1/localization/info"
 
@@ -41,21 +41,24 @@ def mqtt_setup():
 
 def update_robot(id, x, y, heading):
     id = int(id)
+    x = x*x_scale
+    y = y*y_scale
 
     if id in robots:
         old = robots[id];
         if( (math.sqrt(abs( pow(x-old['x'], 2) + pow(y-old['y'], 2))) >= update_xy_threshold)): #  or (abs(old['heading'] - heading) >= update_heading_threshold)
             # update the server about new coordinates, if there is any significant difference
-            robots[id]['x'] = x*x_scale
-            robots[id]['y'] = y*y_scale
+            robots[id]['x'] = x
+            robots[id]['y'] = y
             robots[id]['heading'] = heading
             print(["update", id, x, y, heading])
-            client.publish(sub_topic_publish, json.dumps(robots[id]), qos=1)
+            up = [ robots[id] ]
+            client.publish(sub_topic_publish, json.dumps(up), qos=1)
             client.loop()
     else:
         # create and publish
         robots[id] =  {'id':id, 'x':x, 'y':y, 'heading':heading}
-        client.publish(sub_topic_publish, json.dumps(robots[id]), qos=1)
+        client.publish(sub_topic_create, json.dumps(robots[id]), qos=1)
         client.loop()
 
 def on_connect(client, userdata, flags, rc):
@@ -94,6 +97,7 @@ dictionary = cv.aruco.Dictionary_get(cv.aruco.DICT_6X6_250)
 parameters = cv.aruco.DetectorParameters_create()
 
 # -- Load camera calibrations --------------------------------------------------
+
 cv_file = cv.FileStorage('../board/calibration_data.txt', cv.FILE_STORAGE_READ)
 cameraMatrix = cv_file.getNode("K").mat()
 distCoeffs = cv_file.getNode("D").mat()
@@ -121,7 +125,7 @@ if __name__ == '__main__':
 
     print('Press "q" to quit')
 
-    capture = cv.VideoCapture(camera_id)
+    capture = cv.VideoCapture(0)
     if capture.isOpened():  # try to get the first frame
         frame_captured, frame = capture.read()
     else:
