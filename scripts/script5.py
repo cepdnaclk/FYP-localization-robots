@@ -155,7 +155,7 @@ if __name__ == '__main__':
                 y = math.floor(coordinate[1])                           # center = 0
                 heading = math.floor((rvecs[i][0][1]/math.pi)*180.0)    # [-180, 180]
                 #print(id, x, y, rotation ) # rvecs[i],
-                update_robot(id, (x/4)-150, (y/4), heading)
+                update_robot(id, (x/3)-75, (y/3), heading)
 
                 # Display marker coordinates with x,y,z axies
                 cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
