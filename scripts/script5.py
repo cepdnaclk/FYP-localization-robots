@@ -151,11 +151,11 @@ if __name__ == '__main__':
                 id = markerIds[i][0]
                 coordinate = tvecs[i][0]
 
-                x = math.floor(coordinate[0])                     # center = 75
+                x = math.floor(coordinate[0])                           # center = 0
                 y = math.floor(coordinate[1])                           # center = 0
                 heading = math.floor((rvecs[i][0][1]/math.pi)*180.0)    # [-180, 180]
                 #print(id, x, y, rotation ) # rvecs[i],
-                update_robot(id, (x/3)-75, y/3, heading)
+                update_robot(id, (x/4)-150, (y/4), heading)
 
                 # Display marker coordinates with x,y,z axies
                 cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
