@@ -11,7 +11,7 @@ camera_id = 1
 # -- Coordinate system variables -----------------------------------------------
 robots = {}
 update_xy_threshold = 10       # units
-update_heading_threshold = 10    # degrees
+update_heading_threshold = 30    # degrees
 x_scale = 1.0
 y_scale = 1.0
 
@@ -21,6 +21,7 @@ mqtt_port=1883
 mqtt_keepalive=600
 sub_topic_update="v1/localization/update"
 sub_topic_publish="v1/localization/info"
+sub_topic_color="v1/sensor/color"
 
 # temp topics, for debug purposes
 sub_topic_update_robot="v1/localization/update/robot"
@@ -46,7 +47,8 @@ def update_robot(id, x, y, heading):
 
     if id in robots:
         old = robots[id];
-        if( (math.sqrt(abs( pow(x-old['x'], 2) + pow(y-old['y'], 2))) >= update_xy_threshold)): #  or (abs(old['heading'] - heading) >= update_heading_threshold)
+        if( (math.sqrt(abs( pow(x-old['x'], 2) + pow(y-old['y'], 2))) >= update_xy_threshold)):
+           #  or (abs(old['heading'] - heading) >= update_heading_threshold)):
             # update the server about new coordinates, if there is any significant difference
             robots[id]['x'] = x
             robots[id]['y'] = y
@@ -58,7 +60,10 @@ def update_robot(id, x, y, heading):
     else:
         # create and publish
         robots[id] =  {'id':id, 'x':x, 'y':y, 'heading':heading}
+        color = {'id':id, 'R':0, 'G':200, 'B':0, 'ambition':50}
+
         client.publish(sub_topic_create, json.dumps(robots[id]), qos=1)
+        client.publish(sub_topic_color, json.dumps(color), qos=1)
         client.loop()
 
 def on_connect(client, userdata, flags, rc):
@@ -146,11 +151,11 @@ if __name__ == '__main__':
                 id = markerIds[i][0]
                 coordinate = tvecs[i][0]
 
-                x = math.floor(coordinate[0])                           # center = 0
+                x = math.floor(coordinate[0]) - 75                      # center = 75
                 y = math.floor(coordinate[1])                           # center = 0
                 heading = math.floor((rvecs[i][0][1]/math.pi)*180.0)    # [-180, 180]
                 #print(id, x, y, rotation ) # rvecs[i],
-                update_robot(id, x, y, 0)
+                update_robot(id, x, y, heading)
 
                 # Display marker coordinates with x,y,z axies
                 cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
