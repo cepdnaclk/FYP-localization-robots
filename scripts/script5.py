@@ -42,8 +42,8 @@ def mqtt_setup():
 
 def update_robot(id, x, y, heading):
     id = int(id)
-    x = x*x_scale
-    y = y*y_scale
+    x = round(x*x_scale,2)
+    y = round(y*y_scale,2)
 
     if id in robots:
         old = robots[id];
