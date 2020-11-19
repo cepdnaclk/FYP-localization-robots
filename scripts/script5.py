@@ -25,7 +25,7 @@ sub_topic_color="v1/sensor/color"
 
 # temp topics, for debug purposes
 sub_topic_update_robot="v1/localization/update/robot"
-sub_topic_create="v1/gui/create"
+sub_topic_create="v1/robot/create"
 
 # -- MQTT loop thread function - NOT WORKING FOR NOW ---------------------------
 def mqtt_loop(client):
