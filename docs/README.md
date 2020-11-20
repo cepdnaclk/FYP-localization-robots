@@ -1,3 +1,4 @@
+
 # Swarm Robotics : Localization
 
 Python repository for address the Localization problem of Swarm Robotics
@@ -29,3 +30,4 @@ You can try scripts on the ./scripts directory
 - [OpenCV: Detection of ArUco Markers](https://docs.opencv.org/trunk/d5/dae/tutorial_aruco_detection.html)
 - [OpenCV: Detection of ArUco Boards](https://docs.opencv.org/master/db/da9/tutorial_aruco_board_detection.html)
 - [Calibrating the board](https://mecaruco2.readthedocs.io/en/latest/notebooks_rst/Aruco/sandbox/ludovic/aruco_calibration_rotation.html)
+
