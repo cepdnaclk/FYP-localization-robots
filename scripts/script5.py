@@ -21,10 +21,9 @@ mqtt_port=1883
 mqtt_keepalive=600
 sub_topic_update="v1/localization/update"
 sub_topic_publish="v1/localization/info"
-sub_topic_color="v1/sensor/color"
 
 # temp topics, for debug purposes
-sub_topic_update_robot="v1/localization/update/robot"
+# sub_topic_update_robot="v1/localization/update/robot"
 sub_topic_create="v1/robot/create"
 
 # -- MQTT loop thread function - NOT WORKING FOR NOW ---------------------------
@@ -53,24 +52,23 @@ def update_robot(id, x, y, heading):
             robots[id]['x'] = x
             robots[id]['y'] = y
             robots[id]['heading'] = heading
-            print(["update", id, x, y, heading])
-            up = [ robots[id] ]
-            client.publish(sub_topic_publish, json.dumps(up), qos=1)
+            print(["update", id, heading, x, y])
+            client.publish(sub_topic_publish, json.dumps([ robots[id] ]), qos=1)
             client.loop()
     else:
         # create and publish
-        robots[id] =  {'id':id, 'x':x, 'y':y, 'heading':heading}
-        color = {'id':id, 'R':0, 'G':200, 'B':0, 'ambition':50}
-
+        robots[id] = {'heading':heading, 'id':id, 'x':x, 'y':y}
         client.publish(sub_topic_create, json.dumps(robots[id]), qos=1)
-        client.publish(sub_topic_color, json.dumps(color), qos=1)
+
+        # color = {'id':id, 'R':0, 'G':200, 'B':0, 'ambition':50}
+        # client.publish(sub_topic_color, json.dumps(color), qos=1)
         client.loop()
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT server - "+str(rc))
     client.subscribe(sub_topic_update)
-    client.subscribe(sub_topic_create)
     client.subscribe(sub_topic_update_robot)
+
     # Adding a robot into the data  structure - only for debug
     #robots[0] = {'id':0, 'x':0.0, 'y':0.0, 'heading':0.0}
 
@@ -82,11 +80,6 @@ def on_message(client, userdata, msg):
     if (topic==sub_topic_update):
         # Update the coordinates of all active robots
         client.publish(sub_topic_publish, json.dumps(robots,sort_keys=True), qos=1)
-
-    elif (topic== sub_topic_create):
-        # create a robot - only for testings purposes
-        d=json.loads(body)
-        robots[d['id']] = d
 
     elif (topic == sub_topic_update_robot):
         # manually call update function - only for testing purposes
@@ -153,9 +146,9 @@ if __name__ == '__main__':
 
                 x = math.floor(coordinate[0])                           # center = 0
                 y = math.floor(coordinate[1])                           # center = 0
-                heading = math.floor((rvecs[i][0][1]/math.pi)*180.0)    # [-180, 180]
+                heading = math.floor(((rvecs[i][0][1]/math.pi)*180.0 + 90) )    # [-180, 180]
                 #print(id, x, y, rotation ) # rvecs[i],
-                update_robot(id, (x/3)-75, (y/3), heading)
+                update_robot(id, (x/2), -(y/2), heading)
 
                 # Display marker coordinates with x,y,z axies
                 cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
