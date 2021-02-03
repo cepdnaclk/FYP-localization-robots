@@ -19,8 +19,8 @@ y_scale = 1.0
 mqtt_server="68.183.188.135"
 mqtt_port=1883
 mqtt_keepalive=600
-sub_topic_update="v1/localization/update"
-sub_topic_publish="v1/localization/info"
+sub_topic_update="v1/localization/update/?"
+sub_topic_publish="v1/localization/update"
 
 # temp topics, for debug purposes
 # sub_topic_update_robot="v1/localization/update/robot"
@@ -46,19 +46,29 @@ def update_robot(id, x, y, heading):
 
     if id in robots:
         old = robots[id];
+        update_queue = [];
         if( (math.sqrt(abs( pow(x-old['x'], 2) + pow(y-old['y'], 2))) >= update_xy_threshold)):
            #  or (abs(old['heading'] - heading) >= update_heading_threshold)):
             # update the server about new coordinates, if there is any significant difference
             robots[id]['x'] = x
             robots[id]['y'] = y
             robots[id]['heading'] = heading
-            print(["update", id, heading, x, y])
-            client.publish(sub_topic_publish, json.dumps([ robots[id] ]), qos=1)
+
+            update_queue.append(robots[id])
             client.loop()
+
+        if(len(update_queue)>0):
+            msg = {'reality': 'R', 'data': update_queue }
+            client.publish(sub_topic_publish, json.dumps(msg), qos=1)
+            print(['Loc', msg])
+
     else:
         # create and publish
-        robots[id] = {'heading':heading, 'id':id, 'x':x, 'y':y}
-        client.publish(sub_topic_create, json.dumps(robots[id]), qos=1)
+        robots[id] = {'heading':heading, 'id':id, 'x':x, 'y':y }
+        msg = {'heading':heading, 'id':id, 'x':x, 'y':y, 'reality': 'R'}
+
+        client.publish(sub_topic_create, json.dumps(msg), qos=1)
+        print(['Create', msg])
 
         # color = {'id':id, 'R':0, 'G':200, 'B':0, 'ambition':50}
         # client.publish(sub_topic_color, json.dumps(color), qos=1)
@@ -146,7 +156,7 @@ if __name__ == '__main__':
 
                 x = math.floor(coordinate[0])                           # center = 0
                 y = math.floor(coordinate[1])                           # center = 0
-                heading = math.floor(((rvecs[i][0][1]/math.pi)*180.0 + 90) )    # [-180, 180]
+                heading = math.floor(-1*((rvecs[i][0][1]/math.pi)*180.0)+90)    # [-180, 180]
                 #print(id, x, y, rotation ) # rvecs[i],
                 update_robot(id, (x/2), -(y/2), heading)
 
