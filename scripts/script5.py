@@ -50,25 +50,24 @@ def update_robot(id, x, y, heading):
         if( (math.sqrt(abs( pow(x-old['x'], 2) + pow(y-old['y'], 2))) >= update_xy_threshold)):
            #  or (abs(old['heading'] - heading) >= update_heading_threshold)):
             # update the server about new coordinates, if there is any significant difference
+            robots[id]['id'] = id
             robots[id]['x'] = x
             robots[id]['y'] = y
             robots[id]['heading'] = heading
-
+            robots[id]['reality'] = 'R'
             update_queue.append(robots[id])
             client.loop()
 
         if(len(update_queue)>0):
-            msg = {'reality': 'R', 'data': update_queue }
-            client.publish(sub_topic_publish, json.dumps(msg), qos=1)
-            print(['Loc', msg])
+            client.publish(sub_topic_publish, json.dumps(update_queue), qos=1)
+            print(['Loc:', update_queue])
 
     else:
         # create and publish
-        robots[id] = {'heading':heading, 'id':id, 'x':x, 'y':y }
-        msg = {'heading':heading, 'id':id, 'x':x, 'y':y, 'reality': 'R'}
+        robots[id] = {'heading':heading, 'id':id, 'x':x, 'y':y, 'reality': 'R'}
 
-        client.publish(sub_topic_create, json.dumps(msg), qos=1)
-        print(['Create', msg])
+        client.publish(sub_topic_create, json.dumps(robots[id]), qos=1)
+        print(['Create', robots[id]])
 
         # color = {'id':id, 'R':0, 'G':200, 'B':0, 'ambition':50}
         # client.publish(sub_topic_color, json.dumps(color), qos=1)
