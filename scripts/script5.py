@@ -105,7 +105,7 @@ parameters = cv.aruco.DetectorParameters_create()
 
 # -- Load camera calibrations --------------------------------------------------
 
-cv_file = cv.FileStorage('../board/calibration_data.txt', cv.FILE_STORAGE_READ)
+cv_file = cv.FileStorage('board/calibration_data.txt', cv.FILE_STORAGE_READ)
 cameraMatrix = cv_file.getNode("K").mat()
 distCoeffs = cv_file.getNode("D").mat()
 cv_file.release()

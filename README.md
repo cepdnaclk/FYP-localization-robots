@@ -8,9 +8,11 @@ Please install following pip packages if they aren't pre-installed
 
 ```
 pip install numpy
-pip install opencv-python
+
 pip install aruco
 pip install paho-mqtt
+pip3 install opencv-python
+pip3 install opencv-contrib-python
 ```
 
 or use following command
@@ -22,6 +24,21 @@ pip install -r requirement.txt
 ### Run the scripts
 
 You can try scripts on the ./scripts directory
+
+### Build a executable file (not working so far)
+
+Install PyInstaller from PyPI:
+```
+pip install pyinstaller
+```
+
+Go to your program’s directory and run:
+
+```
+pyinstaller --onefile script5.py
+```
+
+After, please make sure to copy the './board' folder into the directory which executes the exe file.
 
 ### Read More
 - [ar-markers 0.5.0](https://pypi.org/project/ar-markers/)
