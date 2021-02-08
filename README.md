@@ -8,9 +8,11 @@ Please install following pip packages if they aren't pre-installed
 
 ```
 pip install numpy
-pip install opencv-python
+
 pip install aruco
 pip install paho-mqtt
+pip3 install opencv-python
+pip3 install opencv-contrib-python
 ```
 
 or use following command
