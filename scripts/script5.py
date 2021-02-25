@@ -11,7 +11,7 @@ camera_id = 0
 # -- Coordinate system variables -----------------------------------------------
 robots = {}
 update_xy_threshold = 10  # units
-update_heading_threshold = 30  # degrees
+update_heading_threshold = 2  # degrees
 x_scale = 1.0
 y_scale = 1.0
 
@@ -63,8 +63,9 @@ def update_robot(id, x, y, heading):
     if id in robots:
         old = robots[id];
         update_queue = [];
-        if ((math.sqrt(abs(pow(x - old['x'], 2) + pow(y - old['y'], 2))) >= update_xy_threshold)):
-            #  or (abs(old['heading'] - heading) >= update_heading_threshold)):
+        if ((math.sqrt(abs(pow(x - old['x'], 2) + pow(y - old['y'], 2))) >= update_xy_threshold)) #:
+            or (abs(old['heading'] - heading) >= update_heading_threshold)):
+
             # update the server about new coordinates, if there is any significant difference
             robots[id]['id'] = id
             robots[id]['x'] = x
