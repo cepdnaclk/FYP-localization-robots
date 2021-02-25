@@ -26,14 +26,18 @@ sub_topic_publish = "v1/localization/update"
 # sub_topic_update_robot="v1/localization/update/robot"
 sub_topic_create = "v1/robot/create"
 
-def transX(x):
+def transXY(camX, camY):
+    REFERENCE_POINTS=[[-620,-595],[-630,500],[640,540],[630,-600]]
+    DEST=[[-150,150],[-150,-150],[150,-150],[150,150]]
 
 
-    return x;
+    REFERENCE_POINTS=np.float32(REFERENCE_POINTS)
+    DEST=np.float32(DEST)
+    transMatrix=cv.getPerspectiveTransform(REFERENCE_POINTS,DEST)
+    projected=np.dot(transMatrix, np.array([camX,camY,1]))
+    print(projected)
 
-def transY(y):
-
-    return y;
+    return projected;
 
 
 # -- MQTT loop thread function - NOT WORKING FOR NOW ---------------------------
@@ -171,7 +175,9 @@ if __name__ == '__main__':
                 y = math.floor(coordinate[1])  # center = 0
                 heading = math.floor(-1 * ((rvecs[i][0][1] / math.pi) * 180.0) + 90)  # [-180, 180]
                 # print(id, x, y, rotation ) # rvecs[i],
-                update_robot(id, transX(x), transY(y), heading)
+
+                res = transXY(x,y)
+                update_robot(id, res[0], res[1], heading)
 
                 # Display marker coordinates with x,y,z axies
                 cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
