@@ -63,8 +63,7 @@ def update_robot(id, x, y, heading):
     if id in robots:
         old = robots[id];
         update_queue = [];
-        if ((math.sqrt(abs(pow(x - old['x'], 2) + pow(y - old['y'], 2))) >= update_xy_threshold)) #:
-            or (abs(old['heading'] - heading) >= update_heading_threshold)):
+        if ((math.sqrt(abs(pow(x - old['x'], 2) + pow(y - old['y'], 2))) >= update_xy_threshold)) or (abs(old['heading'] - heading) >= update_heading_threshold):
 
             # update the server about new coordinates, if there is any significant difference
             robots[id]['id'] = id
