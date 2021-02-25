@@ -29,7 +29,7 @@ sub_topic_create = "v1/robot/create"
 def transXY(camX, camY):
     # [x,y] for TopLeft, BottomLeft, BottomRight, TopRight
     REFERENCE_POINTS=[[-620,-595],[-630,500],[640,540],[630,-600]]
-    DEST=[[-150,150],[-150,-150],[150,-150],[150,150]]
+    DEST=[[-90,90],[-90,-90],[90,-90],[90,90]]
 
     REFERENCE_POINTS=np.float32(REFERENCE_POINTS)
     DEST=np.float32(DEST)
