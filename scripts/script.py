@@ -4,7 +4,12 @@ import paho.mqtt.client as paho
 import json
 import math
 import time
-import threading
+import yaml
+# import threading
+
+CONFIG_MQTT = 'config-mqtt.yaml'
+CONFIG_MAPPING = 'config-mapping.yaml'
+CONFIG_CAMERA = 'board/calibration_data.txt'
 
 camera_id = 0
 
@@ -12,32 +17,39 @@ camera_id = 0
 robots = {}
 update_xy_threshold = 10  # units
 update_heading_threshold = 2  # degrees
-x_scale = 1.0
-y_scale = 1.0
 
-# -- MQTT variables ------------------------------------------------------------
-mqtt_server = "68.183.188.135"
-mqtt_port = 1883
-mqtt_keepalive = 600
+with open(CONFIG_MAPPING, 'r') as file:
+    mapping_data = yaml.load(file)
+    # print(mapping_data)
+    REFERENCE_POINTS = mapping_data['reference_points']
+    DEST_POINTS = mapping_data['dest']
+
+# -- MQTT variables -----------------------------------------------------------
+
 sub_topic_update = "v1/localization/update/?"
 sub_topic_publish = "v1/localization/update"
-
+sub_topic_create = "v1/robot/create"
 # temp topics, for debug purposes
 # sub_topic_update_robot="v1/localization/update/robot"
-sub_topic_create = "v1/robot/create"
+
+with open(CONFIG_MQTT, 'r') as file:
+    mqtt_data = yaml.load(file)
+    print(mqtt_data)
+    mqtt_server = mqtt_data['mqtt_server']
+    mqtt_port = mqtt_data['mqtt_port']
+    mqtt_keepalive = mqtt_data['mqtt_keepalive']
 
 def transXY(camX, camY):
     # [x,y] for TopLeft, BottomLeft, BottomRight, TopRight
-    REFERENCE_POINTS=[[-620,-595],[-630,500],[640,540],[630,-600]]
-    DEST=[[-90,90],[-90,-90],[90,-90],[90,90]]
+    # REFERENCE_POINTS=[[-620,-595],[-630,500],[640,540],[630,-600]]
+    # DEST_POINTS=[[-90,90],[-90,-90],[90,-90],[90,90]]
 
-    REFERENCE_POINTS=np.float32(REFERENCE_POINTS)
-    DEST=np.float32(DEST)
-    transMatrix=cv.getPerspectiveTransform(REFERENCE_POINTS,DEST)
+    REFERENCE=np.float32(REFERENCE_POINTS)
+    DEST=np.float32(DEST_POINTS)
+    transMatrix=cv.getPerspectiveTransform(REFERENCE,DEST)
     projected=np.dot(transMatrix, np.array([camX,camY,1]))
     # print(projected)
-
-    return projected;
+    return projected
 
 
 # -- MQTT loop thread function - NOT WORKING FOR NOW ---------------------------
@@ -57,12 +69,12 @@ def mqtt_setup():
 
 def update_robot(id, x, y, heading):
     id = int(id)
-    x = round(x * x_scale, 2)
-    y = round(y * y_scale, 2)
+    x = round(x, 2)
+    y = round(y, 2)
 
     if id in robots:
-        old = robots[id];
-        update_queue = [];
+        old = robots[id]
+        update_queue = []
         if ((math.sqrt(abs(pow(x - old['x'], 2) + pow(y - old['y'], 2))) >= update_xy_threshold)) or (abs(old['heading'] - heading) >= update_heading_threshold):
 
             # update the server about new coordinates, if there is any significant difference
@@ -123,7 +135,7 @@ parameters = cv.aruco.DetectorParameters_create()
 
 # -- Load camera calibrations --------------------------------------------------
 
-cv_file = cv.FileStorage('board/calibration_data.txt', cv.FILE_STORAGE_READ)
+cv_file = cv.FileStorage(CONFIG_CAMERA, cv.FILE_STORAGE_READ)
 cameraMatrix = cv_file.getNode("K").mat()
 distCoeffs = cv_file.getNode("D").mat()
 cv_file.release()
@@ -162,9 +174,9 @@ if __name__ == '__main__':
 
         # Non-empty array of markers
         if (type(markerIds) != type(None)):
-            cv.aruco.drawDetectedMarkers(frame, markerCorners, markerIds);
+            cv.aruco.drawDetectedMarkers(frame, markerCorners, markerIds)
 
-            # estimatePoseSingleMarkers(markerCorners, size_of_marker_in_real, cameraMatrix, distCoeffs, rvecs, tvecs);
+            # estimatePoseSingleMarkers(markerCorners, size_of_marker_in_real, cameraMatrix, distCoeffs, rvecs, tvecs)
             rvecs, tvecs, _objPoints = cv.aruco.estimatePoseSingleMarkers(markerCorners, 50, cameraMatrix, distCoeffs)
 
             for i in range(len(markerIds)):
@@ -181,7 +193,7 @@ if __name__ == '__main__':
                 update_robot(id, res[0], res[1], heading)
 
                 # Display marker coordinates with x,y,z axies
-                cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100);
+                cv.aruco.drawAxis(frame, cameraMatrix, distCoeffs, rvecs[i], tvecs[i], 100)
 
         cv.imshow('Marker Detector', frame)
 

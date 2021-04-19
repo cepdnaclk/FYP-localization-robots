@@ -133,3 +133,7 @@ dmypy.json
 .pyre/
 /board/sample/
 /markers/generated/
+
+
+/scripts/config-mqtt.yaml
+/scripts/config-mapping.yaml

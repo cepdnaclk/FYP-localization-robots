@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd ./scripts
-python3  ./script5.py
+python3  ./script.py
