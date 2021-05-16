@@ -168,8 +168,17 @@ if __name__ == '__main__':
     else:
         frame_captured = False
 
-    while frame_captured:
+    i = 0
 
+    while frame_captured:
+        print(i)
+
+        if i == 1:
+            # skip 50% of frames
+            i = 0
+            continue
+
+        i += 1
         markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
         # Non-empty array of markers
