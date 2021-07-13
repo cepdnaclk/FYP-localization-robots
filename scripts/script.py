@@ -5,6 +5,7 @@ import json
 import math
 import time
 import yaml
+from time import sleep
 # import threading
 
 CONFIG_MQTT = 'config-mqtt.yaml'
@@ -12,6 +13,13 @@ CONFIG_MAPPING = 'config-mapping.yaml'
 CONFIG_CAMERA = 'board/calibration_data.txt'
 
 camera_id = 0
+
+capture_interval = 0.005
+capture_skips = 10
+
+fps = 1/(capture_interval*capture_skips)
+
+print('fps: ', fps)
 
 # -- Coordinate system variables -----------------------------------------------
 robots = {}
@@ -171,14 +179,20 @@ if __name__ == '__main__':
     i = 0
 
     while frame_captured:
-        print(i)
+        frame_captured, frame = capture.read()
 
-        if i == 1:
+        # print(i)
+        i += 1
+
+        if i < capture_skips:
             # skip 50% of frames
-            i = 0
+            sleep(capture_interval)
             continue
 
-        i += 1
+        elif i==capture_skips:
+            # Reset the counter and process the frame
+            i = 0
+
         markerCorners, markerIds, rejectedCandidates = cv.aruco.detectMarkers(frame, dictionary, parameters=parameters)
 
         # Non-empty array of markers
@@ -208,7 +222,6 @@ if __name__ == '__main__':
 
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
-        frame_captured, frame = capture.read()
 
     # When everything done, release the capture
     capture.release()
