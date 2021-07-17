@@ -15,7 +15,7 @@ CONFIG_CAMERA = 'board/calibration_data.txt'
 camera_id = 0
 
 capture_interval = 0.005
-capture_skips = 10
+capture_skips = 16
 
 fps = 1/(capture_interval*capture_skips)
 
