@@ -15,6 +15,7 @@ pip install aruco
 pip install paho-mqtt
 pip3 install opencv-python
 pip3 install opencv-contrib-python
+pip3 install pyyaml
 ```
 
 or use following command
