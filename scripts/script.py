@@ -70,6 +70,10 @@ def mqtt_setup():
     client = paho.Client()
     client.on_connect = on_connect
     client.on_message = on_message
+    
+    # TODO: Config username and password
+    # client.username_pw_set("username", "password")
+
     client.connect(mqtt_server, mqtt_port, mqtt_keepalive)
     time.sleep(2)
     client.loop()
